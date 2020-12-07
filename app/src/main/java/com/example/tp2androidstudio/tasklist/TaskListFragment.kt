@@ -1,5 +1,6 @@
 package com.example.tp2androidstudio.tasklist
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,36 +9,46 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tp2androidstudio.R
+import com.example.tp2androidstudio.task.TaskActivity
+import com.example.tp2androidstudio.task.TaskActivity.Companion.ADD_TASK_REQUEST_CODE
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import java.util.UUID.randomUUID
 
-class TaskListFragment : Fragment()
-{
+class TaskListFragment : Fragment() {
     private val taskList = mutableListOf(
-        Task(id = "id_1", title = "Task 1", description = "description 1"),
-        Task(id = "id_2", title = "Task 2"),
-        Task(id = "id_3", title = "Task 3")
+            Task(id = "id_1", title = "Task 1", description = "description 1"),
+            Task(id = "id_2", title = "Task 2"),
+            Task(id = "id_3", title = "Task 3")
     )
-
+    private val adapter = TaskListAdapter(taskList)
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_task_list, container, false);
-
-
-
         return rootView;
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         var recyclerView = view.findViewById<RecyclerView>(R.id.recyclerview);
-        recyclerView.layoutManager= LinearLayoutManager(activity);
-        recyclerView.adapter = TaskListAdapter(taskList);
+        recyclerView.layoutManager = LinearLayoutManager(activity);
+        recyclerView.adapter = adapter
+
+        adapter.onDeleteClickListener = { task ->
+            taskList.remove(task);
+            adapter.notifyDataSetChanged()
+        };
         val buton = view.findViewById<FloatingActionButton>(R.id.floatingActionButton)
-        buton.setOnClickListener {taskList.add(Task(id = randomUUID().toString(), title = "Task ${taskList.size + 1}"));(recyclerView.adapter as TaskListAdapter).notifyDataSetChanged() }
+        buton.setOnClickListener {
+            val intent = Intent(activity, TaskActivity::class.java)
+            startActivityForResult(intent, ADD_TASK_REQUEST_CODE)
+        }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        val task = data!!.getSerializableExtra(TaskActivity.TASK_KEY) as Task
+        taskList.add(task);
+        adapter.notifyDataSetChanged()
+    }
 }
