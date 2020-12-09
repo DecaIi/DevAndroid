@@ -18,13 +18,11 @@ class TaskListAdapter(private val taskList: List<Task>) : RecyclerView.Adapter<T
                 var decscrition =  findViewById<TextView>(R.id.task_description)
                 myTextView.text = task.title ;
                 decscrition.text = task.description;
-
                 findViewById<ImageButton>(R.id.deletButton).setOnClickListener { onDeleteClickListener?.invoke(task) }
             }
         }
     }
     var onDeleteClickListener : ((Task) -> Unit)? =null ;
-
 
     override fun getItemCount(): Int {
         return taskList.size;
@@ -34,7 +32,6 @@ class TaskListAdapter(private val taskList: List<Task>) : RecyclerView.Adapter<T
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
         return TaskViewHolder(itemView);
     }
-
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         holder.bind(taskList[position]);

@@ -1,8 +1,13 @@
 package com.example.tp2androidstudio.tasklist
 
+import kotlinx.serialization.SerialName
 import java.io.Serializable
-
-data class Task(val id:String,var title:String, var description : String ="no descirption"):Serializable{
-
-
+@kotlinx.serialization.Serializable
+data class Task(
+        @SerialName("id")
+        val id:String,
+        @SerialName("title")
+        var title:String,
+        @SerialName("description")
+        var description : String ="no descirption"):Serializable{
 }
