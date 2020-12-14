@@ -9,8 +9,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tp2androidstudio.R
 
-class TaskListAdapter(val taskList: List<Task> = emptyList()) : RecyclerView.Adapter<TaskListAdapter.TaskViewHolder>() {
-
+class TaskListAdapter() : RecyclerView.Adapter<TaskListAdapter.TaskViewHolder>() {
+    var taskList: List<Task> = emptyList()
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(task: Task) {
             itemView.apply { // `apply {}` permet d'éviter de répéter `itemView.*`
