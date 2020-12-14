@@ -1,5 +1,6 @@
 package com.example.tp2androidstudio.tasklist
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -20,6 +21,7 @@ import com.example.tp2androidstudio.task.TaskActivity
 import com.example.tp2androidstudio.task.TaskActivity.Companion.ADD_TASK_REQUEST_CODE
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
+import okhttp3.internal.notify
 
 class TaskListFragment : Fragment() {
     private val taskList = mutableListOf(
@@ -28,7 +30,7 @@ class TaskListFragment : Fragment() {
             Task(id = "id_3", title = "Task 3")
     )
     private val adapter = TaskListAdapter(taskList)
-    private lateinit var myTextView : TextView;
+    private lateinit var myTextView: TextView;
     private val tasksRepository = TasksRepository()
 
 
@@ -40,11 +42,12 @@ class TaskListFragment : Fragment() {
         val rootView = inflater.inflate(R.layout.fragment_task_list, container, false);
         return rootView;
     }
-    override fun onResume(){
+
+    override fun onResume() {
         super.onResume()
-        lifecycleScope.launch{
+        lifecycleScope.launch {
             val userInfo = Api.userService.getInfo().body()!!
-            myTextView.text ="${userInfo.firstName} ${userInfo.lastName}"
+            myTextView.text = "${userInfo.firstName} ${userInfo.lastName}"
             tasksRepository.refresh()
         }
     }
@@ -55,12 +58,7 @@ class TaskListFragment : Fragment() {
         var recyclerView = view.findViewById<RecyclerView>(R.id.recyclerview);
         recyclerView.layoutManager = LinearLayoutManager(activity);
         recyclerView.adapter = adapter
-        /*previouse deleteClickLitener
-        adapter.onDeleteClickListener = { task ->
-            taskList.remove(task);
-            adapter.notifyDataSetChanged()
-        };
-        */
+
         adapter.onDeleteClickListener = { task ->
             lifecycleScope.launch {
                 tasksRepository.delete(task)
@@ -72,17 +70,25 @@ class TaskListFragment : Fragment() {
             val intent = Intent(activity, TaskActivity::class.java)
             startActivityForResult(intent, ADD_TASK_REQUEST_CODE)
         }
+
         tasksRepository.taskList.observe(viewLifecycleOwner, Observer {
             taskList.clear()    // remove adapter.
             taskList.addAll(it) // remove adapter.
             adapter.notifyDataSetChanged()
-        })
+        }
+        )
     }
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val task = data!!.getSerializableExtra(TaskActivity.TASK_KEY) as Task
-        taskList.add(task);
-        adapter.notifyDataSetChanged()
+        if (requestCode == ADD_TASK_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val task = data!!.getSerializableExtra(TaskActivity.TASK_KEY) as Task
+            lifecycleScope.launch {
+                tasksRepository.createTask(task)
+                //tasksRepository.refresh()
+            };
+        }else{
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

@@ -15,24 +15,27 @@ class TasksRepository {
     // On pourra seulement l'observer (s'y abonner) depuis d'autres classes
     public val taskList: LiveData<List<Task>> = _taskList
 
-    suspend fun delete(task: Task){ // in dev
+    suspend fun delete(task: Task) { // in dev
         // Call HTTP (opération longue):
-        val tasksResponse  = tasksWebService.deleteTask(task.id)
+        val tasksResponse = tasksWebService.deleteTask(task.id)
         // À la ligne suivante, on a reçu la réponse de l'API:
         if (tasksResponse.isSuccessful) {
             val editableList = taskList.value.orEmpty().toMutableList()
-            editableList.remove(tasksResponse.body())
-            _taskList.value = editableList!!
+            editableList.remove(task)
+            _taskList.value = editableList
         }
     }
 
-    suspend fun updateTask(task :Task) {
-        val editedTask = tasksWebService.updateTask(task)
-        val editableList = taskList.value.orEmpty().toMutableList()
-        val position = editableList.indexOfFirst { task.id == it.id }
-        editableList[position] = editedTask.body()!!
-        _taskList.value = editableList
+    suspend fun createTask(task: Task) {
+        val tasksResponse = tasksWebService.createTask(task)
+        if (tasksResponse.isSuccessful) {
+            val createdTask = tasksResponse.body()
+            val editableList = _taskList.value.orEmpty().toMutableList()
+            editableList.add(createdTask!!)
+            _taskList.value = editableList
+        }
     }
+
     suspend fun refresh() {
         // Call HTTP (opération longue):
         val tasksResponse = tasksWebService.getTasks()
@@ -43,8 +46,6 @@ class TasksRepository {
             _taskList.value = fetchedTasks!!
         }
     }
-
-
 
 
 }

@@ -9,20 +9,21 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tp2androidstudio.R
 
-class TaskListAdapter(private val taskList: List<Task>) : RecyclerView.Adapter<TaskListAdapter.TaskViewHolder>() {
+class TaskListAdapter(val taskList: List<Task> = emptyList()) : RecyclerView.Adapter<TaskListAdapter.TaskViewHolder>() {
 
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(task: Task) {
             itemView.apply { // `apply {}` permet d'éviter de répéter `itemView.*`
-                var myTextView = findViewById<TextView>(R.id.task_title)
-                var decscrition =  findViewById<TextView>(R.id.task_description)
-                myTextView.text = task.title ;
+                var textView = findViewById<TextView>(R.id.task_title)
+                var decscrition = findViewById<TextView>(R.id.task_description)
+                textView.text = task.title;
                 decscrition.text = task.description;
                 findViewById<ImageButton>(R.id.deletButton).setOnClickListener { onDeleteClickListener?.invoke(task) }
             }
         }
     }
-    var onDeleteClickListener : ((Task) -> Unit)? =null ;
+
+    var onDeleteClickListener: ((Task) -> Unit)? = null;
 
     override fun getItemCount(): Int {
         return taskList.size;

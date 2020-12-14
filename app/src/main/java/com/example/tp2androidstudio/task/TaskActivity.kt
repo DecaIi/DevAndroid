@@ -15,20 +15,26 @@ import com.example.tp2androidstudio.tasklist.Task
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.util.*
 
-class TaskActivity :Activity () {
+class TaskActivity : Activity() {
     companion object {
         const val TASK_KEY: String = "new task"
         const val ADD_TASK_REQUEST_CODE = 666
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.task_editor)
-        var buton  = findViewById<ImageButton>(R.id.validateButton)
-        var title = findViewById<EditText>(R.id.task_activity_title).text.toString()
-        var descrption = findViewById<EditText>(R.id.task_activity_description).text.toString()
-        buton.setOnClickListener { val newTask = Task(id = UUID.randomUUID().toString(), title = title,description = descrption ) ;
-            intent?.putExtra(TASK_KEY,newTask)
-            setResult(ADD_TASK_REQUEST_CODE,intent)
+        var buton = findViewById<ImageButton>(R.id.validateButton)
+        var titleTextView = findViewById<EditText>(R.id.task_activity_title)
+        var descriptionTextView = findViewById<EditText>(R.id.task_activity_description)
+        buton.setOnClickListener {
+            val newTask = Task(
+                                id = UUID.randomUUID().toString(),
+                                title = titleTextView.text.toString(),
+                                description = descriptionTextView.text.toString()
+                                )
+            intent?.putExtra(TASK_KEY, newTask)
+            setResult(RESULT_OK, intent)
             finish()
         }
     }

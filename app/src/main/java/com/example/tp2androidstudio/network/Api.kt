@@ -9,7 +9,7 @@ import retrofit2.Retrofit
 object Api {
     // constantes qui serviront à faire les requêtes
     private const val BASE_URL = "https://android-tasks-api.herokuapp.com/api/"
-    private const val TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyOTQsImV4cCI6MTYzODg4NTM1Mn0.j4ycdnTZKYNbm2EgAHkUjggj269DAqQna2gC3R22gU0"
+    private const val TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjozMDcsImV4cCI6MTYzOTQ3MTg0MH0.AeN9VVXd9p27-KnGMf3uukE4eIsXJcijdgRdy-N_ScQ"
 
     // on construit une instance de parseur de JSON:
     private val jsonSerializer = Json {
