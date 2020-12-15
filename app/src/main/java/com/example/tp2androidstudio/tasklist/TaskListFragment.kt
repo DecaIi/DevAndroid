@@ -2,24 +2,30 @@ package com.example.tp2androidstudio.tasklist
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.example.tp2androidstudio.R
 import com.example.tp2androidstudio.network.Api
 import com.example.tp2androidstudio.network.TasksRepository
+import com.example.tp2androidstudio.network.UserInfo
 import com.example.tp2androidstudio.task.TaskActivity
 import com.example.tp2androidstudio.task.TaskActivity.Companion.ADD_TASK_REQUEST_CODE
+import com.example.tp2androidstudio.userinfo.UserInfoActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
 import okhttp3.internal.notify
@@ -27,8 +33,8 @@ import okhttp3.internal.notify
 class TaskListFragment : Fragment() {
 
     private val adapter = TaskListAdapter()
-    private lateinit var myTextView: TextView;
-
+    private lateinit var myTextView: TextView
+    private lateinit var avatarView : ImageView
     private val viewModel: TaskListViewModel by viewModels()
 
     override fun onCreateView(
@@ -46,15 +52,20 @@ class TaskListFragment : Fragment() {
         lifecycleScope.launch {
             val userInfo = Api.userService.getInfo().body()!!
             myTextView.text = "${userInfo.firstName} ${userInfo.lastName}"
+            avatarView.load(userInfo.avatar)
         }
         viewModel.loadTasks()
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         myTextView = view.findViewById<TextView>(R.id.User_Info)
-
-        var recyclerView = view.findViewById<RecyclerView>(R.id.recyclerview);
-        recyclerView.layoutManager = LinearLayoutManager(activity);
+        avatarView = view.findViewById<ImageView>(R.id.imageAvatar)
+        avatarView.setOnClickListener { val intent = Intent(activity,UserInfoActivity::class.java)
+        startActivity(intent)
+        }
+        var recyclerView = view.findViewById<RecyclerView>(R.id.recyclerview)
+        recyclerView.layoutManager = LinearLayoutManager(activity)
         recyclerView.adapter = adapter
 
         adapter.onDeleteClickListener = { task -> viewModel.deleteTask(task) }

@@ -16,4 +16,5 @@ interface TasksWebService {
 
     @PATCH("tasks/{id}")
     suspend fun updateTask(@Body task: Task, @Path("id") id: String? = task.id): Response<Task>
+
 }
