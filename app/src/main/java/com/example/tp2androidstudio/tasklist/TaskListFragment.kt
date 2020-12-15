@@ -65,8 +65,7 @@ class TaskListFragment : Fragment() {
             startActivityForResult(intent, ADD_TASK_REQUEST_CODE)
         }
         viewModel.taskList.observe(viewLifecycleOwner) { newList ->
-            adapter.taskList = newList;
-            adapter.notifyDataSetChanged();
+            adapter.submitList(newList);
         }
     }
 
